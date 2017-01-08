@@ -1,0 +1,120 @@
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+def binary_search(lyst, to_find):
+    left = 0
+    right = len(lyst) - 1
+    while left <= right:
+        mid = (left + right) // 2
+        if lyst[mid] == to_find:
+            return mid
+        elif to_find < lyst[mid]:
+            right = mid - 1
+        else:
+            left = mid + 1
+
+    return -1
+
+
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+def bubble_sort(to_sort):
+    sort_len = len(to_sort)
+    swap_count = 0
+
+    while True:
+        swapped = False
+        for i in range(sort_len - 1):
+            if to_sort[i] > to_sort[i + 1]:
+                to_sort[i], to_sort[i + 1] = to_sort[i + 1], to_sort[i]
+                swapped = True
+                swap_count += 1
+
+        sort_len -= 1
+        if not swapped:
+            break
+
+    return swap_count
+
+
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+def insertion_sort(to_sort):
+    for i in range(1, len(to_sort)):
+        j = i - 1
+        to_insert = to_sort[i]
+        while j >= 0:
+            if to_sort[j] > to_insert:
+                to_sort[j + 1] = to_sort[j]
+                j -= 1
+            else:
+                break
+        to_sort[j + 1] = to_insert
+
+
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+def quick_sort(to_sort):
+    quick_sort_helper(to_sort, 0, len(to_sort) - 1)
+
+
+def quick_sort_helper(to_sort, left, right):
+    if left < right:
+        boundary_location = partion(to_sort, left, right)
+        quick_sort_helper(to_sort, left, boundary_location - 1)
+        quick_sort_helper(to_sort, boundary_location + 1, right)
+
+
+def partion(to_sort, left, right):
+    middle = (left + right) // 2
+    pivot = to_sort[middle]
+    to_sort[middle], to_sort[right] = to_sort[right], to_sort[middle]
+    boundary = left
+    for i in range(left, right):
+        if to_sort[i] < pivot:
+            to_sort[i], to_sort[boundary] = to_sort[boundary], to_sort[i]
+            boundary += 1
+    to_sort[boundary], to_sort[right] = to_sort[right], to_sort[boundary]
+    return boundary
+
+
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+def merge(left, right, original):
+    i, j, k = 0, 0, 0
+    while i < len(left) and j < len(right):
+        if left[i] < right[j]:
+            original[k] = left[i]
+            i += 1
+        else:
+            original[k] = right[j]
+            j += 1
+        k += 1
+    while i < len(left):
+        original[k] = left[i]
+        i += 1
+        k += 1
+    while j < len(right):
+        original[k] = right[j]
+        j += 1
+        k += 1
+
+
+def merge_sort(to_sort):
+    if len(to_sort) < 2:
+        return
+    else:
+        middle = len(to_sort) // 2
+        left = to_sort[:middle]
+        right = to_sort[middle:]
+        merge_sort(left)
+        merge_sort(right)
+        merge(left, right, to_sort)
+
+
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+a = list(map(int, input().strip().split(" ")))
+# insertion_sort(a)
+# quick_sort(a)
+# merge_sort(a)
+print(a)
