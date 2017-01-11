@@ -46,37 +46,43 @@ class manage_game(TTT_server_communication):
 
 
     def client_thread(self,player):
+        #try:
+        player.send("$ Connection Success !!!\n Your ID is "+str(player.id))
         try:
-            player.send("$ Connection Success !!!\n Your ID is "+str(player.id))
-
             while player.is_waiting:
-                with self.lock_for_match:
-                    opposition = self.find_opposition(player)
+
+                opposition = self.find_opposition(player)
                 if opposition is None:time.sleep(1)
-            #with self.lock_for_match:
-            if player.game_id == None:
-                new_game = Game(player,opposition)
-                print("Game",new_game.game_id,"started betwwen players:", player.id, "and", opposition.id)
-                #threading.Thread(target=new_game.start())
-                new_game.start()
-                print("Game over")
-                player.send(player.status)
-                opposition.send(opposition.status)
-            else:
-                while player.status == A:
-                    sleep(1)
+                else:
+                    new_game = Game(player,opposition)
+                    print("Game",new_game.game_id,"started betwwen players:", player.id, "and", opposition.id)
+                    new_game.start()
+                    print("Game over")
+                    player.send(player.status)
+                    opposition.send(opposition.status)
+        finally:
+            self.waiting_players.remove(player)
 
 
-        except Exception as e:
-            print("Error in client thread",e)
+
+
+
+        #except Exception as e:
+            #print("Error in client thread",e)
+
+
+
+
+
 
     def find_opposition(self,player):
-        for opposition in self.waiting_players:
-            if opposition.is_waiting and opposition != player:
-                if opposition is None: return None
-                opposition.is_waiting = False
-                player.is_waiting = False
-                return opposition
+        with self.lock_for_match:
+            for opposition in self.waiting_players:
+                if opposition.is_waiting and opposition != player:
+                    if opposition is None: return None
+                    opposition.is_waiting = False
+                    player.is_waiting = False
+                    return opposition
 
 
 
@@ -136,6 +142,8 @@ class Game:
 
     def enter_on_board(self,pos, playing, waiting):
         print("line 133",playing.mark)
+        print("line 133",waiting.mark)
+
         self.game_board[pos] = playing.mark
         playing.send(self.display_board())
         waiting.send(self.display_board())
